@@ -1,23 +1,34 @@
-require( 'dotenv' ).config();
-// Initialize DB Connection
-require( './config/database' );
+const express = require("express");
+//const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
-const config = require( './config/config' ).getConfig(),
-    PORT = config.PORT;
+// set up express
 
-console.log( '✔ Bootstrapping Application' );
-console.log( `✔ Mode: ${config.MODE}` );
-console.log( `✔ Port: ${PORT}` );
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-const { server } = require( './config/server' );
+const PORT = process.env.PORT || 5000;
 
-server.listen( PORT ).on( 'error', ( err ) => {
-    console.log( '✘ Application failed to start' );
-    console.error( '✘', err.message );
-    process.exit( 0 );
-} ).on( 'listening', () => {
-    console.log( '✔ Application Started' );
-} );
+app.listen(PORT, () => console.log(`The server has started on port: ${PORT}`));
 
+// set up mongoose
 
-module.exports = { server };
+// mongoose.connect(
+//   process.env.MONGODB_CONNECTION_STRING,
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useCreateIndex: true,
+//   },
+//   (err) => {
+//     if (err) throw err;
+//     console.log("MongoDB connection established");
+//   }
+// );
+
+// set up routes
+
+app.use("/users", require("./routes/userRouter"));
+app.use("/", require("./routes/main"));
